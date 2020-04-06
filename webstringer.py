@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 # TODO: program in return address, change default to something not jefftadashi.com related
-# TODO: make docker
 # TODO: Change jam script to docker format
-# TODO: Make this send an initial "test" email to verify email sending is working. Message should be different.
 
 import requests
 import json
@@ -56,15 +54,29 @@ for x in args.email:
     final_email_list.append({"email":x})
 
 
-# Below is for costco:
-# <meta property="og:availability" content="out of stock" />
-# <meta property="og:availability" content="instock" />
-# nd "oos-overlay hide" in r.text
-# og:availability" content="instock
-# form-group hide needs " at end to not match a shipping one
 
-# Below is for Amazon:
-# Currently unavailable
+# Send initial test/starting email
+print ("Sending initial test/notice email...")
+sg = sendgrid.SendGridAPIClient(api_key=read_api_key)
+init_data = {
+"personalizations": [
+    {
+   "to": final_email_list,
+   "subject": "JeffTadashi/Webstringer: Begin monitoring notice"
+    }
+],
+"from": {
+    "email": "website-checker@jefftadashi.com"
+},
+"content": [
+    {
+    "type": "text/plain",
+    "value": "Hello! This is a notice message to make sure your email is working, and to let you know that monitoring has begun on the following URL: " + args.url
+    }
+]
+}
+response = sg.client.mail.send.post(request_body=init_data)
+
 
 
 while True:
@@ -105,7 +117,7 @@ while True:
         "personalizations": [
             {
            "to": final_email_list,
-            "subject": "Jeff's Website Checker: Found a match!"
+            "subject": "JeffTadashi/Webstringer: MATCH FOUND!!!"
             }
         ],
         "from": {
@@ -114,7 +126,7 @@ while True:
         "content": [
             {
             "type": "text/plain",
-            "value": "Your requested website monitoring got a match! Go buy that thing you wanted: " + args.url
+            "value": "Your requested website monitoring got a match! See URL here: " + args.url
             }
         ]
         }
